@@ -1,0 +1,9 @@
+NEXTAUTH_SECRET=secretjeynext
+NEXTAUTH_URL=http://192.168.8.104:3000/
+JWT_SECRET=secrety
+AUTH_TL_BASE_URL=http://192.168.8.104:5176
+
+
+GOOGLE_CLIENT_ID=clientIDvalue
+GOOGLE_CLIENT_SECRET=clientsecretvalue
+
