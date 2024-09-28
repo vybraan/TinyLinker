@@ -6,12 +6,13 @@ import { getProviders, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-export default function SignIn() {
+export default function Register() {
   const [providers, setProviders] = useState(null);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const [loginInProgress, setLoginInProgress] = useState(false);
+  const [registerProgress, setRegisterProgress] = useState(false);
 
 
   const { data: session, status } = useSession();
@@ -33,12 +34,11 @@ export default function SignIn() {
   }, [session, router]);
 
 
-
   if (status === 'loading') {
     return (
-      <div className='absolute inset-0 flex justify-center items-center'>
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
+        <div className='absolute inset-0 flex justify-center items-center'>
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+        </div>
     );
   }
 
@@ -46,7 +46,7 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoginInProgress(true);
+    setRegisterProgress(true);
 
     // Passing credentials to `signIn` method.
     const res = await signIn('authtl', {
@@ -54,17 +54,18 @@ export default function SignIn() {
       callbackUrl: "/",
       username,
       password,
+      email,
     });
 
-    setLoginInProgress(false);
+    setRegisterProgress(false);
 
     // Handle response here if needed (error handling, etc.)
     if (res.ok) {
       window.location.href = res.url; // Redirect manually
-      console.error('Login success:', res);
+      console.error('Register success:', res);
     } else {
-      setError("Login failed. Please check your username and password.");
-      console.error('Login failed:', res.error);
+      setError("Register failed. Please check your username and password.");
+      console.error('Register failed:', res.error);
     }
   };
 
@@ -82,7 +83,7 @@ return (
             className="mx-auto h-10 w-auto"
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight ">
-            Sign in to your account
+            Create  new account
           </h2>
         </div>
 
@@ -102,7 +103,7 @@ return (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="w-full form-control">
                 <div className="label">
-                  <span className="label-text">Username or Email</span>
+                  <span className="label-text">Username</span>
                 </div>
                   <input
                     name="username"
@@ -113,7 +114,25 @@ return (
                     id="username"
                     required
                     autoComplete="username"
-                    disabled={loginInProgress}
+                    disabled={registerProgress}
+                    className="input input-bordered input-primary w-full input-sm"
+                  />
+              </div>
+
+              <div className="w-full form-control">
+                <div className="label">
+                  <span className="label-text">Email</span>
+                </div>
+                  <input
+                    name="email"
+                    type="text"
+                    placeholder="Your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    id="email"
+                    required
+                    autoComplete="email"
+                    disabled={registerProgress}
                     className="input input-bordered input-primary w-full input-sm"
                   />
               </div>
@@ -122,11 +141,6 @@ return (
                 <div className="label">
                   <div htmlFor="password" className="label-text">
                     Password
-                  </div>
-                  <div className="label-text-alt">
-                    <a href="#" className="font-semibold text-primary-600 hover:text-primary-500">
-                      Forgot password?
-                    </a>
                   </div>
                 </div>
                 <input
@@ -137,7 +151,7 @@ return (
                   onChange={(e) => setPassword(e.target.value)}
                   id="password"
                   required
-                  disabled={loginInProgress}
+                  disabled={registerProgress}
                   autoComplete="current-password"
                   className="input input-bordered input-primary w-full input-sm"
                 />
@@ -147,9 +161,9 @@ return (
                 <button
                   type="submit"
                   className="flex btn btn-primary w-full btn-sm"
-                   disabled={loginInProgress}
+                   disabled={registerProgress}
                 >
-                  Sign in
+                  Register
                 </button>
               </div>
             </form>
@@ -179,9 +193,9 @@ return (
 
 
           <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member?{' '}
-            <a href="/auth/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-              Register
+            Already a member?{' '}
+            <a href="/auth/signin" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+              Login
             </a>
           </p>
 
