@@ -5,6 +5,8 @@ import { signIn } from 'next-auth/react';
 import { getProviders, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+
 
 export default function Register() {
   const [providers, setProviders] = useState(null);
@@ -13,6 +15,8 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [registerProgress, setRegisterProgress] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
 
 
   const { data: session, status } = useSession();
@@ -42,36 +46,74 @@ export default function Register() {
     );
   }
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegisterProgress(true);
+  
+    try {
+      const res = await axios.post('/api/register', {
+        username: username,
+        email: email,
+        password: password,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+        },
+      });
+  
+      const data = res.data;
+      
+      setRegisterProgress(false); // Stop loading state
+  
+      if (res.status === 201) {
+        setShowToast(true); // Show toast on success
+        setTimeout(() => setShowToast(false), 2000);
 
-    // Passing credentials to `signIn` method.
-    const res = await signIn('authtl', {
-      redirect: false,
-      callbackUrl: "/",
-      username,
-      password,
-      email,
-    });
+        setTimeout(() => window.location.href = '/auth/signin',3000);
 
-    setRegisterProgress(false);
-
-    // Handle response here if needed (error handling, etc.)
-    if (res.ok) {
-      window.location.href = res.url; // Redirect manually
-      console.error('Register success:', res);
-    } else {
-      setError("Register failed. Please check your username and password.");
-      console.error('Register failed:', res.error);
+      } else {
+        const errorMessage = data.message || "Registration failed. Please check your inputs.";
+        // alert(errorMessage);
+        setError(errorMessage);
+      }
+    } catch (error: any) {
+      setRegisterProgress(false); // Stop loading state
+  
+      const errorMessage = error.response?.data?.message || error.message || 'An error occurred during registration.';
+      // alert(errorMessage);
+      setError(errorMessage);
+      console.error('Registration error:', error.toString());
     }
   };
+  
+
+
 
 return (
 
      <>
+
+      {showToast && (
+        <div className="toast toast-top toast-end">
+
+          <div role="alert" className="alert">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              className="stroke-info h-6 w-6 shrink-0">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Account created successfully.</span>
+          </div>
+
+        </div>
+      )}
 
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">

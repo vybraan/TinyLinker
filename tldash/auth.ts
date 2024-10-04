@@ -62,13 +62,13 @@ const options = {
       // When user logs in, add JWT details to the token
       if (user) {
         token.accessToken = user.token;
-        token.expiresIn = user.expiration;
+        token.expiresIn = user.expiresIn;
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken;
-      session.expiresIn = token.expiration;
+      session.expiresIn = token.expiresIn;
       return session;
     }
   },

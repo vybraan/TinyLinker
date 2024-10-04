@@ -59,12 +59,14 @@ export default function SignIn() {
     setLoginInProgress(false);
 
     // Handle response here if needed (error handling, etc.)
-    if (res.ok) {
-      window.location.href = res.url; // Redirect manually
+    if (null === res.url) {
+      setError("Wrong username or password.");
+      // alert(JSON.stringify(res));
+      // window.location.href = res.url; // Redirect manually
       console.error('Login success:', res);
     } else {
-      setError("Login failed. Please check your username and password.");
-      console.error('Login failed:', res.error);
+      setError("");
+      // console.error('Login failed:', res.error);
     }
   };
 
@@ -89,7 +91,7 @@ return (
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 
           { error ?(
-            <span>{error}</span>) :(
+            <span className='text-red-600'>{error}</span>) :(
               <></>
             )
           }
