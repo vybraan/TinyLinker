@@ -8,43 +8,22 @@ import { Cog6ToothIcon } from  '@heroicons/react/24/solid';
 import { HomeIcon } from  '@heroicons/react/24/solid';
 import { InformationCircleIcon } from  '@heroicons/react/24/solid';
 import UserSettings from './UserSettings'
+import axios from 'axios';
+import History  from './History';
+import Statistics  from './Statistics';
+
+
 
 export default function Dashboard() {
 
   const {data: session, status} = useSession();
 
   const [activeTab, setActiveTab] = useState("tldash");
+  const [originalUrl, setOriginalUrl] = useState();
+  const [shortUrl, setShortUrl] = useState("");
 
-   // Dummy data for shortened links history
-  const fakeHistory = [
-    {
-      id: 1,
-      originalUrl: "https://www.example.com/some-long-url",
-      shortUrl: "https://bit.ly/short1",
-      date: "2024-09-10",
-      clicks: 12,
-    },
-    {
-      id: 2,
-      originalUrl: "https://another-example.com/this-is-a-longer-url",
-      shortUrl: "https://bit.ly/short2",
-      date: "2024-09-11",
-      clicks: 28,
-    },
-    {
-      id: 3,
-      originalUrl: "https://yetanotherexample.com/super-long-url",
-      shortUrl: "https://bit.ly/short3",
-      date: "2024-09-12",
-      clicks: 45,
-    },
-  ];
+  const [copySuccess, setCopySuccess] = useState(""); // State to handle copy success
 
-    // Calculate basic statistics
-  const totalLinks = fakeHistory.length;
-  const totalClicks = fakeHistory.reduce((sum, link) => sum + link.clicks, 0);
-  const avgClicks = totalLinks > 0 ? (totalClicks / totalLinks).toFixed(2) : 0;
-  const mostClickedLink = fakeHistory.reduce((max, link) => (link.clicks > max.clicks ? link : max), fakeHistory[0]);
 
   if (status === 'loading') {
     return (
@@ -61,6 +40,61 @@ export default function Dashboard() {
     );
   }
 
+  const copyToClipboard = () => {
+    if (shortUrl) {
+      navigator.clipboard.writeText(shortUrl)
+        .then(() => {
+          setCopySuccess("Copied to clipboard!");
+          setTimeout(() => setCopySuccess(false), 2000);
+        })
+        .catch(() => {
+          setCopySuccess("Failed to copy!");
+          setTimeout(() => setCopySuccess(false), 2000);
+
+        });
+    }
+  };
+  
+  const shorten = async () => {
+
+    try{
+
+      // alert(originalUrl);
+      const res = await axios.post('/api/shorten/ourl', {
+        originalUrl,
+      }, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+        },
+      });
+
+      const baseUrl = window.location.origin; // Get the base URL from the request host
+      const shortCode = res.data.data.shortCode; // Assuming 'data' contains the shortcode
+      const fullShortenedUrl = `${baseUrl}/tl/${shortCode}`;
+
+      setShortUrl(fullShortenedUrl); // Keep shortcode separate if needed
+      setOriginalUrl(""); // Clear original URL input
+
+      document.getElementById('my_modal_2').showModal(); // Open the modal
+
+      console.error(res.data.data);
+
+
+
+      
+
+    }
+    catch(error){
+      // alert(error);
+      // console.error(error.status);
+
+
+    }
+
+  }
+
 
 
 
@@ -71,146 +105,139 @@ export default function Dashboard() {
 
   return(
     <>
+      
         <main className="flex-grow flex flex-col ">
 
-          <ul className="menu bg-base-200 lg:menu-horizontal rounded-box justify-center space-x-2">
+          <ul className="menu bg-base-200 menu-horizontal rounded-box justify-center space-x-2"> {/*lg:menu-horizontal*/}
             <li>
               <a onClick={() => setActiveTab("tldash")} className={` ${activeTab === "tldash" && "active"}`}>
                 <HomeIcon className="size-5" />
-                tldash
+                <span className="hidden lg:block">
+                  tldash
+                </span>
               </a>
             </li>
             <li>
               <a onClick={() => setActiveTab("history")} className={` ${activeTab === "history" && "active"}`}>
                 <InformationCircleIcon className="size-5" />
-                History
-                <span className="badge badge-sm badge-success">hot</span>
+                <span className="hidden lg:block">
+                  History
+                  <span className="badge badge-sm badge-success">hot</span>
+                </span>
               </a>
             </li>
             <li >
               <a onClick={() => setActiveTab("stats")} className={` ${activeTab === "stats" && "active"}`}>
-                Stats
-                <span className="badge badge-xs badge-info"></span>
+                {/* <span className="hidden lg:block"> */}
+                  Stats
+                  <span className="badge badge-xs badge-info"></span>
+                {/* </span> */}
               </a>
             </li>
             <li >
               <a onClick={() => setActiveTab("settings")} className={` ${activeTab === "settings" && "active"}`}>
                 <Cog6ToothIcon className="size-5"/>
+                <span className="hidden lg:block">
                 Settings
+                </span>
               </a>
             </li>
           </ul>
 
-          <div className="flex grow items-center justify-center ">
+          <div className={`flex relative flex-col grow items-center justify-center ${activeTab === "tldash"  ? "bg-gradient-to-r from-purple-600 via-pink-500 to-red-500" : ""}`}>
+
+          <div className="absolute pointer-events-none inset-0 overflow-hidden">
+            <div className="absolute bg-gradient-radial from-white/20 to-transparent rounded-full w-72 h-72 animate-pulse-slow opacity-70 top-10 left-10"></div>
+            <div className="absolute bg-gradient-radial from-white/20 to-transparent rounded-full w-52 h-52 animate-pulse-slow opacity-40 top-20 left-52"></div>
+            <div className="absolute bg-gradient-radial from-white/20 to-transparent rounded-full w-96 h-96 animate-pulse-slow opacity-50 bottom-20 right-20"></div>
+            <div className="absolute bg-gradient-radial from-white/20 to-transparent rounded-full w-80 h-80 animate-pulse-slow opacity-60 top-20 right-40"></div>
+          </div>
+
 
             {activeTab === "tldash" && ( 
-              <div className="card w-96 bg-base-200/50 shadow-xl">
-                <div className="card-body">
-                  <h2 className="card-title text-3xl font-bold text-center mb-6">URLSnap</h2>
+              <>
 
-                  <div className="form-control mb-4">
-                    <label className="label">
-                      <span className="label-text">Enter your URL:</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="https://example.com"
-                      className="input input-bordered w-full"
+
+
+                <div className="relative z-10 text-center mb-5">
+                  <h1 className="text-5xl text-white font-extrabold tracking-tight">
+                    Seamlessly Shortening Your URLs
+                  </h1>
+                  <p className="mt-4 text-lg text-white opacity-90">
+                    A Modern Powerful URL Shortening Service with Microservice Architecture.
+                  </p>
+                </div>
+
+
+
+
+                <dialog id="my_modal_2" className="modal">
+                  <div className="modal-box">
+                    <div>
+
+                    <h3 className="font-bold text-lg">Shortened URL</h3>
+                    <div className="flex items-center justify-center p-2">
+                      {copySuccess && <p className="text-success-500 mt-2">{copySuccess}</p>}
+
+                    </div>
+                    <p className="py-4">Your shortened URL is:</p>
+                    <input 
+                      type="text" 
+                      value={shortUrl} 
+                      readOnly 
+                      className="input input-bordered w-full" 
                     />
-                  </div>
+                    <div className="flex gap-3 p-2 mt-2 items-center">
+                      <button className="btn  btn-primary" onClick={copyToClipboard}>Copy</button>
+                      <a href={shortUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">Open</a>
 
-                  <div className="form-control">
-                    <button className="btn btn-primary btn-block">
-                      Shorten URL
-                    </button>
+                    </div>
+
+
+
+                    </div>
+                  </div>
+                  <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
+
+
+
+
+                <div className="card w-96 bg-base-200/50 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title text-3xl font-bold text-center mb-6">Enter your URL:</h2>
+                    <div className="form-control mb-4">
+                      <label className="label">
+                        {/* <span className="label-text">Enter your URL:</span> */}
+                      </label>
+                      <input
+                        onChange={(e)=> {setOriginalUrl(e.target.value)}} value={originalUrl}
+                        type="text"
+                        placeholder="https://example.com"
+                        className="input input-bordered w-full"
+                      />
+                    </div>
+
+                    <div className="form-control">
+                      <button onClick={shorten} className="btn btn-primary btn-block">
+                        Shorten
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             )}
 
             {activeTab === "history" && (
-              <div className="card w-full bg-base-200/50 shadow-xl max-w-4xl">
-                <div className="card-body">
-                  <h2 className="card-title text-2xl font-bold bg-success px-2 py-1 rounded-md">Link History</h2>
-                  <div className="overflow-x-auto">
-                    <table className="table w-full">
-                      <thead>
-                        <tr>
-                          <th>Original URL</th>
-                          <th>Shortened URL</th>
-                          <th>Date</th>
-                          <th>Clicks</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {fakeHistory.map((link) => (
-                          <tr key={link.id}>
-                            <td>
-                              <a href={link.originalUrl} target="_blank" className="link link-primary">
-                                {link.originalUrl}
-                              </a>
-                            </td>
-                            <td>
-                              <a href={link.shortUrl} target="_blank" className="link link-secondary">
-                                {link.shortUrl}
-                              </a>
-                            </td>
-                            <td>{link.date}</td>
-                            <td>{link.clicks}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+              <History />
             )}
 
 
             {activeTab === "stats" && (
-            <div className="card w-full bg-base-200/50 shadow-xl max-w-4xl">
-              <div className="card-body">
-                <h2 className="card-title text-2xl font-bold bg-success px-2 py-1 rounded-md">Statistics</h2>
-
-
-                <div className="stats shadow grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="stat">
-                    <div className="stat-title">Links</div>
-                    <div className="stat-value">{totalLinks}</div>
-                    <div className="stat-desc">Total Links Shortened</div>
-                  </div>
-                  <div className="stat">
-                    <div className="stat-title">Clicks</div>
-                    <div className="stat-value">{totalClicks}</div>
-                    <div className="stat-desc">Overall clicks achieved</div>
-
-                  </div>
-                  <div className="stat">
-                    <div className="stat-title">Average Clicks per Link</div>
-                    <div className="stat-value">{avgClicks}</div>
-                    <div className="stat-desc">Avarage click per link</div>
-
-                  </div>
-                </div>
-
-                <div className="card mt-8">
-                  <div className="card-body">
-                    <h2 className="card-title text-xl font-bold">Most Clicked Link</h2>
-                      <p>
-                        <a
-                          href={mostClickedLink.originalUrl}
-                          target="_blank"
-                          className="link link-primary"
-                        >
-                          {mostClickedLink.originalUrl}
-                        </a>{" "}
-                        <span className="ml-2">({mostClickedLink.clicks} clicks)</span>
-                      </p>
-                      <p className="text-gray-500">Shortened: {mostClickedLink.shortUrl}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <Statistics/>
+  
               )}
 
               {activeTab ==="settings" && (
