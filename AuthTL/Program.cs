@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AuthTL.Data;
+using AuthTL.Models;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,12 +25,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 // For Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
 // NO need just testing pruposes
-// builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+// builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 //     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
@@ -49,8 +51,8 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = configuration["JWT:ValidAudience"],
-        ValidIssuer = configuration["JWT:ValidIssuer"],
+        ValidAudience = configuration["JWT:Audience"],
+        ValidIssuer = configuration["JWT:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
     };
 });
@@ -70,8 +72,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
-//------------------test
-// app.MapIdentityApi<IdentityUser>();
+// app.MapIdentityApi<ApplicationUser>();
 
 // Authentication & Authorization
 app.UseAuthentication();
