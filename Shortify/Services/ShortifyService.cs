@@ -3,40 +3,51 @@ namespace Shortify.Services;
 using System;
 using Shortify.Models;
 using Shortify.Data;
+using Microsoft.EntityFrameworkCore;
 
 public interface IShortifyService
 {
-  Task<string> GenerateShortUrlAsync(string url, string UserId);
+    Task<string> GenerateShortUrlAsync(string url, string UserId);
+    Task<List<UrlMap>> GetUserGeneratedUrlsAsync(string userId);
 }
 
 public class ShortifyService : IShortifyService
 {
-  private readonly ShortifyDbContext _dbContext;
+    private readonly ShortifyDbContext _dbContext;
 
-  public ShortifyService(ShortifyDbContext dbContext)
-  {
-    _dbContext = dbContext;
-  }
-
-  public async Task<string> GenerateShortUrlAsync(string url, string userId)
-  {
-    var ShortCode = GenerateUniqueId();
-
-    //Save the url 
-    var urlMap = new UrlMap
+    public ShortifyService(ShortifyDbContext dbContext)
     {
-      OriginalUrl = url,
-      ShortCode = ShortCode,
-      UserId = int.Parse(userId),
-      ExpirationDate = DateTime.UtcNow.AddDays(7)
-    };
-
-    _dbContext.ShortenedUrls.Add(urlMap);
-    await _dbContext.SaveChangesAsync();
+        _dbContext = dbContext;
+    }
 
 
-    return ShortCode;
-  }
+    public async Task<List<UrlMap>> GetUserGeneratedUrlsAsync(string userId)
+    {
+        var userGuid = Guid.Parse(userId);
+
+        return await _dbContext.ShortenedUrls
+            .Where(map => map.UserId == userGuid)
+            .ToListAsync();
+    }
+
+    public async Task<string> GenerateShortUrlAsync(string url, string userId)
+    {
+        var ShortCode = GenerateUniqueId();
+
+        var urlMap = new UrlMap
+        {
+            OriginalUrl = url,
+            ShortCode = ShortCode,
+            UserId = Guid.Parse(userId),
+            ExpirationDate = DateTime.UtcNow.AddDays(7)
+        };
+
+        _dbContext.ShortenedUrls.Add(urlMap);
+        await _dbContext.SaveChangesAsync();
+
+
+        return ShortCode;
+    }
 
 
   private string GenerateUniqueId()
@@ -49,7 +60,7 @@ public class ShortifyService : IShortifyService
   private long GenerateRandomNumberForBase62()
   {
     Random random = new Random();
-    return (long)(random.NextDouble() * 56800235584); // Generates a number between 0 and 56,800,235,584
+    return (long)(random.NextDouble() * 56800235584);
   }
 
   private string Base62Encode(long num)

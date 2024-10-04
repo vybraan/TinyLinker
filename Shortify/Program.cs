@@ -1,5 +1,3 @@
-
-
 using Shortify.Services;
 using Shortify.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,93 +6,61 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+ConfigurationManager configuration = builder.Configuration;
 
 builder.Services.AddDbContext<ShortifyDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("UrlShortenerDatabase")));
 
-var jwtKey = builder.Configuration["Jwt:Key"];
-if (string.IsNullOrEmpty(jwtKey))
-{
-  throw new InvalidOperationException("JWT Key is not configured.");
-}
-
-// builder.Services.AddAuthentication(options =>
-// {
-//   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//   options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-// })
-
-
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
 {
-  options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-  options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-  options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 
 // Adding Jwt Bearer
 .AddJwtBearer(options =>
 {
-  options.SaveToken = true;
-  options.RequireHttpsMetadata = false;
-  options.TokenValidationParameters = new TokenValidationParameters()
-  {
-    ValidateIssuer = true,
-    ValidateAudience = true,
-    ValidAudience = builder.Configuration["Jwt:Audience"],
-    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-  };
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = configuration["Jwt:Audience"],
+        ValidIssuer = configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+    };
 
-  options.Events = new JwtBearerEvents
-  {
-    OnAuthenticationFailed = context =>
+    options.Events = new JwtBearerEvents
     {
-      Console.WriteLine("Authentication failed.");
-      Console.WriteLine(context.Exception.ToString());
-      return Task.CompletedTask;
-    },
-    OnTokenValidated = context =>
-    {
-      Console.WriteLine("Token validated.");
-      return Task.CompletedTask;
-    }
-  };
+        OnAuthenticationFailed = context =>
+        {
+            context.Response.Headers.Add("WWW-Authenticate", "Bearer");
+            Console.WriteLine(context.Exception.ToString());
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            var user = context.Principal.Identity;
+            return Task.CompletedTask;
+        }
+    };
+
 });
 
-
-
-
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(options =>
-//     {
-//       options.TokenValidationParameters = new TokenValidationParameters
-//       {
-//         ValidateIssuer = true,
-//         ValidateAudience = true,
-//         ValidateLifetime = true,
-//         ValidateIssuerSigningKey = true,
-//         ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//         ValidAudience = builder.Configuration["Jwt:Audience"],
-//         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-//       };
-//
-//
-//     });
-//
-//builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IShortifyService, ShortifyService>();
+builder.Services.AddScoped<IRouterService, RouterService>();
 
 
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -105,15 +71,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
-app.Use(async (context, next) =>
-{
-  var token = context.Request.Headers["Authorization"].ToString();
-  Console.WriteLine($"Token: {token}");
-  await next.Invoke();
-});
+// Debug token issues
+//app.Use(async (context, next) =>
+//{
+//  var token = context.Request.Headers["Authorization"].ToString();
+//  Console.WriteLine($"Token: {token}");
+//  await next.Invoke();
+//});
 
 app.Run();
 
