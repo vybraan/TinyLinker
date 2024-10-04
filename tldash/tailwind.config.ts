@@ -8,12 +8,19 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      animation: {
+        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
       colors: {
       },
     },
   },
   plugins: [
     require('daisyui'),
+    require("@tailwindcss/typography"),
   ],
   daisyui: {
     themes: ["light", "dark", "cupcake", "cyberpunk"],
