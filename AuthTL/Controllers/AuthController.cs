@@ -12,12 +12,12 @@ using System.Text;
 [ApiController]
 public class AuthController : ControllerBase
 {
-  private readonly UserManager<IdentityUser> _userManager;
+  private readonly UserManager<ApplicationUser> _userManager;
   private readonly RoleManager<IdentityRole> _roleManager;
   private readonly IConfiguration _configuration;
 
   public AuthController(
-      UserManager<IdentityUser> userManager,
+      UserManager<ApplicationUser> userManager,
       RoleManager<IdentityRole> roleManager,
       IConfiguration configuration)
   {
@@ -38,8 +38,9 @@ public class AuthController : ControllerBase
       var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Sid, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Sid, user.Id),
             };
 
       foreach (var userRole in userRoles)
@@ -67,7 +68,7 @@ public class AuthController : ControllerBase
     if (userExists != null)
       return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-    IdentityUser user = new()
+    ApplicationUser user = new()
     {
       Email = model.Email,
       SecurityStamp = Guid.NewGuid().ToString(),
@@ -77,9 +78,12 @@ public class AuthController : ControllerBase
     var result = await _userManager.CreateAsync(user, model.Password);
 
     if (!result.Succeeded)
-      return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+            // Require better handling of this
+            //return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = result.ToString() });
 
-    return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+
+      return Ok(new Response { Status = "Success", Message = "User created successfully!" });
   }
 
   [HttpPost]
@@ -90,7 +94,7 @@ public class AuthController : ControllerBase
     if (userExists != null)
       return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-    IdentityUser user = new()
+    ApplicationUser user = new()
     {
       Email = model.Email,
       SecurityStamp = Guid.NewGuid().ToString(),
@@ -123,8 +127,8 @@ public class AuthController : ControllerBase
     var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
 
     var token = new JwtSecurityToken(
-        issuer: _configuration["JWT:ValidIssuer"],
-        audience: _configuration["JWT:ValidAudience"],
+        issuer: _configuration["JWT:Issuer"],
+        audience: _configuration["JWT:Audience"],
         expires: DateTime.Now.AddHours(3),
         claims: authClaims,
         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
