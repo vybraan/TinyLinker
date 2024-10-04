@@ -1,3 +1,9 @@
 **/.vs
 **/.env
 **/Migrations
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.csproj.user
+**/appsettings.Development.json
+**/Properties/launchSettings.json
