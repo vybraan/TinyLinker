@@ -24,7 +24,7 @@ This microservice is dedicated to generating shortcodes and mapping them to orig
 
 # Screenshots
 
-![Dashboard](https://github.com/vybraan/)
-![History](https://github.com/vybraan/)
-![Statistics](https://github.com/vybraan/)
-![Settings](https://github.com/vybraan/)
+![Dashboard](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/1.png)
+![History](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/2.png)
+![Statistics](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/3.png)
+![Settings](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/4.png)
