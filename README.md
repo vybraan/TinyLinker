@@ -18,7 +18,7 @@ The frontend interface of the Tiny Linker ecosystem. tldash is built using React
 
 Uses Redis for caching the redirections codes to ensure high performance
 
-### 3. **Shortify**
+### 3. **tlshorten**
 
 This microservice is dedicated to generating shortcodes and mapping them to original URLs. It saves these mappings in the database.This service also handles URL redirection. When a user accesses a shortened link (e.g., `https://${baseurl}/tl/{shortcode}`), this service redirects them to the original URL. It also logs click statistics for analytics. This is built with ASP.NET WebAPI (C#).
 
