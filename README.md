@@ -23,8 +23,4 @@ Uses Redis for caching the redirections codes to ensure high performance
 This microservice is dedicated to generating shortcodes and mapping them to original URLs. It saves these mappings in the database.This service also handles URL redirection. When a user accesses a shortened link (e.g., `https://${baseurl}/tl/{shortcode}`), this service redirects them to the original URL. It also logs click statistics for analytics. This is built with ASP.NET WebAPI (C#).
 
 # Screenshots
-
 ![Dashboard](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/1.png)
-![History](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/2.png)
-![Statistics](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/3.png)
-![Settings](https://github.com/vybraan/TinyLinker/blob/2ce6827835993fcaedd91b41a02b6705d8f0ae42/static/4.png)
