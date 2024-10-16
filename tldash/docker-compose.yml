@@ -1,6 +1,6 @@
 services:
   tldash:
-    image: vybraan/tldash:v0.0.2
+    image: vybraan/tldash:dev-latest
     container_name: tldash
     ports:
       - 3000:3000
