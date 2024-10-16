@@ -1,4 +1,3 @@
-import { getSession } from 'next-auth/react';
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 

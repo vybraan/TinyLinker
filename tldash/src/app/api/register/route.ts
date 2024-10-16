@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     // Success
     return NextResponse.json({ message: data.message }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
     return NextResponse.json({ message: errorMessage }, { status: 400 });
   }
