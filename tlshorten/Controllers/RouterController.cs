@@ -74,7 +74,7 @@ public class RouterController : ControllerBase
             MostClickedLink = mostClickedLink != null ? new
             {
                 OriginalUrl = mostClickedLink.OriginalUrl,
-                ShortenedUrl = $"{Request.Scheme}://{Request.Host}/tl/{mostClickedLink.ShortCode}",
+                ShortenedUrl = mostClickedLink.ShortCode,
                 Clicks = mostClickedLink.ClickCount
             } : null
         };
