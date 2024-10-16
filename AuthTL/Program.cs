@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AuthTL.Data;
 using AuthTL.Models;
+using AuthTL.Services;
 
 
 
@@ -21,7 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+// Add the MigrationService
+builder.Services.AddScoped<MigrationService>();
 
 
 // For Identity
@@ -63,6 +65,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Apply migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    var migrationService = scope.ServiceProvider.GetRequiredService<MigrationService>();
+    migrationService.ApplyMigrations();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
