@@ -11,6 +11,7 @@ ConfigurationManager configuration = builder.Configuration;
 builder.Services.AddDbContext<ShortifyDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("UrlShortenerDatabase")));
 
+
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -57,10 +58,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IShortifyService, ShortifyService>();
 builder.Services.AddScoped<IRouterService, RouterService>();
-
+builder.Services.AddScoped<MigrationService>();
 
 
 var app = builder.Build();
+
+// Apply migrations at startup
+using (var scope = app.Services.CreateScope())
+{
+    var migrationService = scope.ServiceProvider.GetRequiredService<MigrationService>();
+    migrationService.ApplyMigrations();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
