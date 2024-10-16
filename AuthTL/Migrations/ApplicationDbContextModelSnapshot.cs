@@ -94,6 +94,7 @@ namespace AuthTL.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PreferredTheme")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProfilePictureUrl")
@@ -103,6 +104,7 @@ namespace AuthTL.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ShorteningMethod")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
