@@ -1,0 +1,6 @@
+services:
+  authtl:
+    image: vybraan/authtl:v0.0.2
+    container_name: authtl
+    ports:
+      - 8080:8080
