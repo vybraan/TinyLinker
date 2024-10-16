@@ -2,6 +2,7 @@
 **/.dockerignore
 **/.env
 **/.git
+**/shortener.db
 **/.gitignore
 **/.project
 **/.settings
