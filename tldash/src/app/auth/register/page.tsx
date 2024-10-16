@@ -77,7 +77,7 @@ export default function Register() {
         // alert(errorMessage);
         setError(errorMessage);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setRegisterProgress(false); // Stop loading state
   
       const errorMessage = error.response?.data?.message || error.message || 'An error occurred during registration.';
