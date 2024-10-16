@@ -1,0 +1,6 @@
+services:
+  tlshorten:
+    image: vybraan/tlshorten:v0.0.2
+    container_name: tlshorten
+    ports:
+      - 8080:8080
