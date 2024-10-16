@@ -7,6 +7,8 @@ const Statistics = () => {
   const [statistics, setStatistics] = useState(null);
   const {data: session, status} = useSession();
 
+  const baseDomain = process.env.NEXT_PUBLIC_DOMAIN;
+
 
   useEffect(() => {
     fetchStatisticsData();
@@ -88,7 +90,7 @@ const Statistics = () => {
                             </a>
                             <span className="ml-2">({statistics.mostClickedLink?.clicks} clicks)</span>
                             </p>
-                            <p className="text-gray-500">Shortened: {statistics.mostClickedLink?.shortenedUrl}</p>
+                            <a href={baseDomain + "/tl/"+ statistics.mostClickedLink?.shortenedUrl} className="text-gray-500">Shortened: {baseDomain}/tl/{statistics.mostClickedLink?.shortenedUrl}</a>
                         </>
                         ) : (
                         <p>No most clicked link available.</p>
