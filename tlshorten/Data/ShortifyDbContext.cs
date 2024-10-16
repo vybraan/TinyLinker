@@ -13,6 +13,5 @@ public class ShortifyDbContext : DbContext
     base.OnModelCreating(builder);
   }
 
-  // Define your DbSets for the entities (tables)
   public DbSet<UrlMap> ShortenedUrls { get; set; }
 }
