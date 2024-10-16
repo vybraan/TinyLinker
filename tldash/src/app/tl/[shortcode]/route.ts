@@ -3,31 +3,6 @@ import axios from 'axios';
 import redisClient from '@/lib/redisClient';
 
 const CACHE_EXPIRATION = 60 * 60 * 24; // 24 hours
-const MAX_RETRY_ATTEMPTS = 3;
-const RETRY_DELAY = 1000; // 1 second
-
-async function retryRedisOperation(operation: () => Promise<any>, maxRetries: number, delay: number) {
-  let retries = 0;
-  while (retries < maxRetries) {
-    try {
-      return await operation(); // Try performing the Redis operation
-    } catch (error) {
-      retries++;
-      console.error(`Redis operation failed. Attempt ${retries} of ${maxRetries}:`, error);
-
-      if (retries === maxRetries) {
-        throw new Error('Max retry attempts reached. Redis operation failed.');
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, delay)); // Wait before retrying
-      delay *= 2; // Exponential backoff
-    }
-  }
-}
-
-
-
-
 
 export async function GET(request: Request, { params }: { params: { shortcode: string } }) {
   const { shortcode } = params;
