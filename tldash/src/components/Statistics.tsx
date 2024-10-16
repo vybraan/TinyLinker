@@ -4,10 +4,14 @@ import axios from 'axios';
 
 
 const Statistics = () => {
-  const [statistics, setStatistics] = useState<any>(null);
+  const [statistics, setStatistics] = useState(null);
   const {data: session, status} = useSession();
 
 
+  useEffect(() => {
+    fetchStatisticsData();
+  }, []);
+  
   const fetchStatisticsData = async () => {
     try {
         
@@ -40,9 +44,6 @@ const Statistics = () => {
   }
 
   
-  useEffect(() => {
-    fetchStatisticsData();
-  }, []);
 
 
     return (

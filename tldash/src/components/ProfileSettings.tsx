@@ -15,7 +15,7 @@ const ProfileSettings = () => {
 
 
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const fetchUserData = async () => {
     try {

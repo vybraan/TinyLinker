@@ -12,7 +12,7 @@ const PreferencesSettings = () => {
   const [isEditing, setIsEditing] = useState(false);
 
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const fetchUserData = async () => {
     try {

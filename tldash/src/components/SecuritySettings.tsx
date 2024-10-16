@@ -9,7 +9,7 @@ const SecuritySettings = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
 
   useEffect(() => {
@@ -33,6 +33,7 @@ const SecuritySettings = () => {
 
   const toggleTwoFactorAuth = () => {
     userData.twoFactorEnabled = !userData.twoFactorEnabled; 
+    setIsEditing(false);
   }
 
   if (loading) return <div className='absolute inset-0 flex justify-center items-center'>

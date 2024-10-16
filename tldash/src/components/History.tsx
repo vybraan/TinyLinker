@@ -14,6 +14,11 @@ const History = () => {
   const [history, setHistory] = useState();
   const {data: session, status} = useSession();
 
+    
+  useEffect(() => {
+    fetchHistoryData();
+  }, []);
+
 
   const fetchHistoryData = async () => {
     try {
@@ -47,10 +52,6 @@ const History = () => {
     );
   }
 
-  
-  useEffect(() => {
-    fetchHistoryData();
-  }, []);
 
 
     return (

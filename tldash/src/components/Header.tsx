@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { themeChange } from "theme-change";
 import {useEffect} from "react";
 import LogoutButton from './LogoutButton'
-import { UserCircleIcon, BellIcon } from  '@heroicons/react/24/solid';
+import { UserCircleIcon } from  '@heroicons/react/24/solid';
 
 
 export default function Header() {
@@ -174,7 +174,7 @@ export default function Header() {
           </>
         ) : (
           <>
-              <a className="btn btn-sm btn-primary">Register</a>
+              <a href="/auth/register" className="btn btn-sm btn-primary">Register</a>
           </>
         )}
       </div>
