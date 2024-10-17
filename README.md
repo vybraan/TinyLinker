@@ -4,6 +4,8 @@
 
 It also includes deployment strategies using Kubernetes, Docker containers, and some automated configurations, for the infrastructure management process.
 
+Checkout the [Wiki page](https://github.com/vybraan/TinyLinker/wiki)
+
 ## Key Microservices
 
 ### 1. **AuthTL (Authentication for Tiny Linker)**
