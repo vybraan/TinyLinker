@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tldash-deployment
+  namespace: tiny-linker
+  labels:
+    app: tldash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tldash
+  template:
+    metadata:
+      labels:
+        app: tldash
+    spec:
+      containers:
+        - name: tldash
+          image: vybraan/tldash:dev-latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: NEXTAUTH_SECRET
+            - name: NEXTAUTH_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NEXTAUTH_URL
+            - name: NEXT_PUBLIC_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NEXT_PUBLIC_DOMAIN
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
+            - name: AUTH_TL_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: AUTH_TL_BASE_URL
+            - name: SHORTIFY_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SHORTIFY_BASE_URL
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_URL
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: GOOGLE_CLIENT_SECRET

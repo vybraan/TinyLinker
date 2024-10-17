@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authtl-deployment
+  namespace: tiny-linker
+  labels:
+    app: authtl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authtl
+  template:
+    metadata:
+      labels:
+        app: authtl
+    spec:
+      containers:
+        - name: authtl
+          image: vybraan/authtl:v0.0.2
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"

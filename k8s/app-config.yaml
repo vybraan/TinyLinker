@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: tiny-linker
+data:
+  NEXTAUTH_URL: "http://localhost:3000" # This need to be changed
+  NEXT_PUBLIC_DOMAIN: "http://localhost:3000" # public facing urlThis need to be çhanged
+  AUTH_TL_BASE_URL: "http://authtl-service:8080"
+  SHORTIFY_BASE_URL: "http://tlshorten-service:8080"
+  REDIS_URL: "redis://redis-service:6379"

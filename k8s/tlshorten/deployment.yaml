@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tlshorten-deployment
+  namespace: tiny-linker
+  labels:
+    app: tlshorten
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tlshorten
+  template:
+    metadata:
+      labels:
+        app: tlshorten
+    spec:
+      containers:
+        - name: tlshorten
+          image: vybraan/tlshorten:v0.0.3
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
