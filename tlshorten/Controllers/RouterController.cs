@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using tlshorten.Services;
 using System.Security.Claims;
-
-
+using System.Security.Policy;
+using tlshorten.Models;
 
 [Route("tl/[controller]")]
 [ApiController]
@@ -16,6 +16,26 @@ public class RouterController : ControllerBase
     public RouterController(IRouterService routerService)
     {
         _routerService = routerService;
+    }
+
+    [HttpPost("click")]
+    public async Task<IActionResult> Click([FromBody] UrlDto shorcode) {
+
+        if (string.IsNullOrWhiteSpace(shorcode.OriginalUrl))
+        {
+            return BadRequest("shorcode is required.");
+        }
+
+        Console.WriteLine("shorcode being retrievedd");
+
+
+        var urlMap = await _routerService.GetUrlByShortCodeAsync(shorcode.OriginalUrl);
+        if (urlMap == null)
+        {
+            return NotFound("ShortCode not found.");
+        }
+        await _routerService.UpdateClickStatsAsync(urlMap);
+        return Ok(new { message = "Click Updated" });
     }
 
     // GET /{shortCode} - This route does not require authentication
@@ -39,7 +59,6 @@ public class RouterController : ControllerBase
 
         await _routerService.UpdateClickStatsAsync(urlMap);
        return Ok(new { url = urlMap.OriginalUrl });
-        //return Redirect(urlMap.OriginalUrl);
     }
 
     // GET api/router/stats - This route requires authentication

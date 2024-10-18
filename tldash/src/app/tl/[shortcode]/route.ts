@@ -16,7 +16,7 @@ export async function GET(request: Request, { params }: { params: { shortcode: s
     console.error(redisClient.isOpen);
 
     if (redisClient.isOpen) {
-      console.log('Connected to Redis');
+      console.log('Connected to Redis try');
       
         try {
           
@@ -24,6 +24,20 @@ export async function GET(request: Request, { params }: { params: { shortcode: s
       
           if (cachedUrl) {
             console.log('Cache hit -- shortcode: ', shortcode);
+            try {
+              const response = axios.post(`${process.env.SHORTIFY_BASE_URL}/tl/router/click`, {
+                originalUrl: shortcode,
+              },{
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': '*/*',
+                },
+              });
+              console.log("clicking")
+              
+            } catch (error) {
+              console.error(error);
+            }
             return NextResponse.redirect(cachedUrl, 302); 
           }
 
