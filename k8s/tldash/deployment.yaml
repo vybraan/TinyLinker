@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: tldash
-          image: vybraan/tldash:dev-latest
+          image: vybraan/tldash:v0.0.4
           ports:
             - containerPort: 3000
           env:
